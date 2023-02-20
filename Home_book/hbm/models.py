@@ -6,7 +6,7 @@ from django.utils import timezone
 class Account(models.Model):
     account_owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     account_number = models.CharField(max_length=200, null=False, blank=False)
-    account_balance = models.DecimalField(max_digits=10, decimal_places=2)
+    account_balance = models.DecimalField(max_digits=10, decimal_places=2, default=0)
 
     def __str__(self):
         return f'{self.account_owner} {self.account_number} {self.account_balance}'
@@ -27,7 +27,8 @@ class Transaction(models.Model):
     transaction_date = models.DateTimeField(default=timezone.now)
     transaction_sum = models.DecimalField(max_digits=10, decimal_places=2)
     transaction_comment = models.CharField(max_length=255)
-    transaction_balance_now = models.DecimalField(max_digits=10, decimal_places=2)   # баланс на момент транзакции
+    transaction_balance_now = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+
 
     def __str__(self):
         return f"{self.transaction_type_choices[self.transaction_type][1]}; Sum:{self.transaction_sum}; Date:{self.transaction_date}"
