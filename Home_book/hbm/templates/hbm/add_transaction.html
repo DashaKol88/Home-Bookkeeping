@@ -1,0 +1,20 @@
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Add transaction</title>
+    <link rel="stylesheet" href="{% static 'bootstrap/css/bootstrap.min.css' %}">
+</head>
+<body>
+<div class="form-group">
+    <h1>Add transaction</h1>
+</div>
+<form action="{% url 'add_transaction' %}" method="post">
+    {% csrf_token %}
+    <table class="table-primary">
+       {{ form }}
+    </table>
+        <button type="submit" class="save btn btn-default">Save</button>
+</form>
+</body>
+</html>
