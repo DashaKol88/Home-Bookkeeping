@@ -27,7 +27,7 @@ class Transaction(models.Model):
     transaction_date = models.DateTimeField(default=timezone.now)
     transaction_sum = models.DecimalField(max_digits=10, decimal_places=2)
     transaction_comment = models.CharField(max_length=255)
-    transaction_balance_now = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+
 
 
     def __str__(self):

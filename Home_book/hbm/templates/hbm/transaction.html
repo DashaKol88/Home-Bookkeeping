@@ -1,11 +1,5 @@
-{% load static %}
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Transactions</title>
-    <link rel="stylesheet" href="{% static 'bootstrap/css/bootstrap.min.css' %}">
-</head>
-<body>
+{% extends 'hbm/base.html' %}
+{% block content %}
 <h1>Transaction list</h1>
 {% if transactions %}
      <table class="table table-hover">
@@ -16,7 +10,7 @@
                 <th>Category</th>
                 <th>Sum</th>
                 <th>Comment</th>
-                <th>Balance</th>
+                <th></th>
             </tr>
          </thead>
          <tbody>
@@ -39,7 +33,31 @@
                         <td>{{ t.transaction_sum }}</td>
                     {% endif %}
                     <td>{{ t.transaction_comment }}</td>
-                    <td>{{ t.transaction_balance_now }}</td>
+                <td>
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#examplemodal">Delete</button></td>
+                    <div class="modal fade" id="examplemodal" tabindex="-1">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">Delete Transaction</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <p>Are you sure you want to delete the transaction:</p>
+                                        <p>Date: {{ t.transaction_date }}</p>
+                                        <p>Sum: {{ t.transaction_sum }}</p>
+                                        <p>Comment: {{ t.transaction_comment }}</p>
+                                         <div class="modal-footer">
+                                                 <form action="{% url 'del_transaction' t.pk %}" method="post">
+                                                        {% csrf_token %}
+                                                    <button type="submit" class="btn btn-danger">Delete</button>
+                                                 </form>
+                                         </div>
+                                    </div>
+                            </div>
+                        </div>
+                    </div>
+
                     </tr>
             {% endfor %}
         </tbody>
@@ -47,6 +65,4 @@
 {% else %}
     <p>No transactions are available.</p>
 {% endif %}
-
-</body>
-</html>
+{% endblock %}

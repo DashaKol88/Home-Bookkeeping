@@ -1,10 +1,6 @@
-{% load static %}
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Add transaction</title>
-    <link rel="stylesheet" href="{% static 'bootstrap/css/bootstrap.min.css' %}">
-</head>
+{% extends 'hbm/base.html' %}
+<title>Add transaction</title>
+{% block content %}
 <body>
 <div class="form-group">
     <h1>Add transaction</h1>
@@ -14,7 +10,7 @@
     <table class="table-primary">
        {{ form }}
     </table>
-        <button type="submit" class="save btn btn-default">Save</button>
+        <button type="submit" class="save btn btn-primary">Save</button>
 </form>
 </body>
-</html>
+{% endblock %}
