@@ -1,0 +1,15 @@
+{% extends 'hbm/base.html' %}
+<title>Filter by type</title>
+{% block content %}
+<body>
+<h1>Filter by type</h1>
+
+<form action="{% url 'filter_by_type' %}" method="post">
+    {% csrf_token %}
+    <table class="table-primary">
+
+    </table>
+        <button type="submit" class="save btn btn-primary">Save</button>
+</form>
+</body>
+{% endblock %}

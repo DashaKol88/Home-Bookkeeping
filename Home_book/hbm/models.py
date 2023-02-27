@@ -24,7 +24,7 @@ class Transaction(models.Model):
     transaction_type_choices = [(0, 'Expense'), (1, 'Income')]
     transaction_type = models.IntegerField(choices=transaction_type_choices, default=0)
     transaction_category = models.ForeignKey(TransactionCategory, on_delete=models.SET_DEFAULT, default=0)
-    transaction_date = models.DateTimeField(default=timezone.now)
+    transaction_date = models.DateField(default=timezone.now)
     transaction_sum = models.DecimalField(max_digits=10, decimal_places=2)
     transaction_comment = models.CharField(max_length=255)
 

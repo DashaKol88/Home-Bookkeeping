@@ -1,11 +1,11 @@
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
 
 from .forms import TransactionForm
-from .models import Transaction, Account
+from .models import Transaction, Account, TransactionCategory
 
 
 # Create your views here.
@@ -53,6 +53,7 @@ def add_transaction(request):
     return render(request, 'hbm/add_transaction.html', {"form": form})
 
 
+
 @login_required
 def del_transaction(request, transaction_id):
     user_account = get_object_or_404(Account, account_owner=request.user)
@@ -64,3 +65,33 @@ def del_transaction(request, transaction_id):
     user_account.save()
     transaction.delete()
     return redirect('latest')
+
+
+def home(request):
+    user_account = get_object_or_404(Account, account_owner=request.user)
+    return render(request, 'hbm/home.html', {'user_account': user_account})
+
+
+@login_required
+def filter_by_type(request):
+    if request.method == "POST":
+        user_account = get_object_or_404(Account, account_owner=request.user)
+        transaction_type = request.POST.get("transaction_type")
+        if transaction_type == "Expense":
+            transactions = list(Transaction.objects.filter(transaction_account=user_account, transaction_type=0).values(
+                'transaction_category', 'transaction_date', 'transaction_sum', 'transaction_comment'
+            ))
+        else:
+            transactions = list(Transaction.objects.filter(transaction_account=user_account, transaction_type=1).values(
+                'transaction_category', 'transaction_date', 'transaction_sum', 'transaction_comment'
+            ))
+        return JsonResponse(transactions)
+
+
+@login_required
+def filter_by_date(request):
+    if request.method == "POST":
+        first_date = request.POST.get("first_date")
+        second_date = request.POST.get("second_date")
+        user_account = get_object_or_404(Account, account_owner=request.user)
+        transactions = Transaction.objects.filter(transaction_account=user_account)

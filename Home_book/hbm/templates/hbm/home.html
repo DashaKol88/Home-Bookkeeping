@@ -1,0 +1,10 @@
+{% extends 'hbm/base.html' %}
+{% block content %}
+{% if user_account %}
+    <p>Hello, {{user_account.account_owner}}</p>
+    <p>Account number: {{user_account.account_number}}</p>
+    <p>Your balance: {{user_account.account_balance}}</p>
+{% else %}
+    <p>Hello, Anonymous</p>
+{% endif %}
+{% endblock %}
