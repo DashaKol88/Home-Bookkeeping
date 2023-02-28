@@ -41,7 +41,7 @@ def transaction_latest(request):
     user_account = get_object_or_404(Account, account_owner=request.user)
     transactions = Transaction.objects.filter(transaction_account=user_account).order_by('-transaction_date')
     transactions = list(
-        transactions.values('transaction_date', 'transaction_type', 'transaction_category', 'transaction_sum',
+        transactions.values('transaction_date', 'transaction_type', 'transaction_category__category_name', 'transaction_sum',
                             'transaction_comment'))
     return JsonResponse({"transactions": transactions}) # 'transaction_category' отдать имя
 
@@ -86,7 +86,8 @@ def transaction_filter(request):
         transactionEndDate = date(transactionEndDate[0], transactionEndDate[1], transactionEndDate[2])
         if transactionStartDate < transactionEndDate and transactionStartDate < date.today() and transactionEndDate <= date.today() and transactiondate is None:
             transactions = transactions.filter(transaction_date__range=[transactionStartDate, transactionEndDate])
-    transactions = list(transactions.values())
+    transactions = list(transactions.values('transaction_date', 'transaction_type', 'transaction_category__category_name', 'transaction_sum',
+                            'transaction_comment'))
     return JsonResponse({"transactions": transactions})
 
 
@@ -126,5 +127,5 @@ def transaction_delete(request, transaction_id):
 # Categories
 
 def categories(request):
-    category_list = list(TransactionCategory.objects.all().values('id','category_name'))
+    category_list = list(TransactionCategory.objects.all().values('category_name'))
     return JsonResponse({'data': category_list})

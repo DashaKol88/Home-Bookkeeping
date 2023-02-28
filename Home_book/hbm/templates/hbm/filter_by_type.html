@@ -1,14 +1,21 @@
 {% extends 'hbm/base.html' %}
-<title>Filter by type</title>
+<title>Filter</title>
 {% block content %}
 <body>
 <h1>Filter by type</h1>
 
 <form action="{% url 'filter_by_type' %}" method="post">
     {% csrf_token %}
-    <table class="table-primary">
-
-    </table>
+    <div class="guruweba_example_caption">Filter</div>
+    <div class="guruweba_example_infofield">Filter by one day</div>
+    <input name="guruweba_example_date" type="date" />
+    <div class="guruweba_example_infofield">Filter by type</div>
+    <select name="theme" required="required">
+        <option value="">Choise transaction type</option>
+        <option id="0">Expense</option>
+        <option id="1">Income</option>
+    </select>
+    <input name="guruweba_example_date" type="date" />
         <button type="submit" class="save btn btn-primary">Save</button>
 </form>
 </body>

@@ -88,10 +88,4 @@ def filter_by_type(request):
         return JsonResponse(transactions)
 
 
-@login_required
-def filter_by_date(request):
-    if request.method == "POST":
-        first_date = request.POST.get("first_date")
-        second_date = request.POST.get("second_date")
-        user_account = get_object_or_404(Account, account_owner=request.user)
-        transactions = Transaction.objects.filter(transaction_account=user_account)
+
