@@ -43,7 +43,7 @@ def transaction_latest(request):
     transactions = list(
         transactions.values('transaction_date', 'transaction_type', 'transaction_category__category_name', 'transaction_sum',
                             'transaction_comment'))
-    return JsonResponse({"transactions": transactions}) # 'transaction_category' отдать имя
+    return JsonResponse({"transactions": transactions})
 
 
 @login_required(login_url='login')
@@ -127,5 +127,5 @@ def transaction_delete(request, transaction_id):
 # Categories
 
 def categories(request):
-    category_list = list(TransactionCategory.objects.all().values('category_name'))
+    category_list = list(TransactionCategory.objects.all().values('transaction_type','category_name'))
     return JsonResponse({'data': category_list})

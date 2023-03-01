@@ -15,6 +15,13 @@
         <option id="0">Expense</option>
         <option id="1">Income</option>
     </select>
+    <div class="guruweba_example_infofield">Filter by category</div>
+    <select name="theme" required="required">
+        {% for c in category_list %}
+        <option id={{c.id}}>c.category_name</option>
+    </select>
+    <div class="guruweba_example_infofield">Filter by date range</div>
+    <input name="guruweba_example_date" type="date" />
     <input name="guruweba_example_date" type="date" />
         <button type="submit" class="save btn btn-primary">Save</button>
 </form>
