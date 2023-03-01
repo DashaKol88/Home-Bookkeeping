@@ -8,7 +8,7 @@ from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views.decorators.http import require_http_methods
 
-from .forms import TransactionForm
+from .forms import TransactionForm, PlanningTransactionForm
 from .models import Transaction, Account, TransactionCategory, PlanningTransaction
 
 
@@ -145,13 +145,32 @@ def transaction_statistic(request):
 
 
 # Planning
-@login_required(login_url='/auth_error')
-@require_http_methods(["GET"])
+@login_required
 def planned_transactions(request):
     account_data = get_object_or_404(Account, account_owner=request.user)
     transactions = PlanningTransaction.objects.filter(transaction_account_plan=account_data).order_by(
         '-transaction_date_plan')
-    return render(request, 'hbm/transaction.html', {'transactions': transactions})
+    return render(request, 'hbm/planned_transactions.html', {'transactions': transactions})
 
 
+@login_required
+def add_scheduled_transaction(request):
+    if request.method == "POST":
+        form = PlanningTransactionForm(request.POST)
+        if form.is_valid():
+            transaction = form.save(commit=False)
+            user_account = get_object_or_404(Account, account_owner=request.user)
+            transaction.transaction_account_plan = user_account
+            transaction.save()
+            return redirect('planned_transactions')
+    else:
+        form = PlanningTransactionForm()
+    return render(request, 'hbm/add_scheduled_transaction.html', {"form": form})
 
+
+@login_required
+def del_scheduled_transaction(request, transaction_id):
+    user_account = get_object_or_404(Account, account_owner=request.user)
+    transaction = get_object_or_404(PlanningTransaction, pk=transaction_id, transaction_account_plan=user_account)
+    transaction.delete()
+    return redirect('planned_transactions')

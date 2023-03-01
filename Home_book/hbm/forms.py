@@ -1,5 +1,5 @@
 from django import forms
-from .models import Transaction
+from .models import Transaction, PlanningTransaction
 
 
 class TransactionForm(forms.ModelForm):
@@ -9,8 +9,9 @@ class TransactionForm(forms.ModelForm):
             'transaction_type', 'transaction_category', 'transaction_date', 'transaction_sum', 'transaction_comment')
 
 
-class TransactionForm(forms.ModelForm):
+class PlanningTransactionForm(forms.ModelForm):
     class Meta:
-        model = Transaction
+        model = PlanningTransaction
         fields = (
-            'transaction_type', 'transaction_category', 'transaction_date', 'transaction_sum', 'transaction_comment')
+            'transaction_type_plan', 'transaction_category_plan', 'transaction_date_plan', 'transaction_sum_plan',
+            'transaction_comment_plan')
