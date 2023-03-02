@@ -78,48 +78,35 @@ def home(request):
 @login_required
 def filter(request):
     user_account = get_object_or_404(Account, account_owner=request.user)
-    transactiondate = request.GET.get("transactiondate")
-    transactiontype = request.GET.get("transactiontype")
-    transactioncategory = request.GET.get("transactioncategory")
-    transactionStartDate = request.GET.get("transactionStartDate")
-    transactionEndDate = request.GET.get("transactionEndDate")
     transactions = Transaction.objects.filter(transaction_account=user_account)
-    if transactiondate and transactionStartDate and transactionEndDate:
-        return JsonResponse(status=400, data={'status': 'false',
-                                              'message': "You cannot choose to sort by day and by time range at the same time"})
-    elif transactiondate:
-        transactiondate = list(map(int, transactiondate.split('-')))
-        transactiondate = date(transactiondate[0], transactiondate[1], transactiondate[2])
-        if transactiondate <= date.today() and transactionStartDate is None and transactionEndDate is None:
-            transactions = transactions.filter(transaction_date=transactiondate)
-    elif transactiontype:
-        if transactiontype == "Expense":
-            transactions = transactions.filter(transaction_type=0)
-        if transactiontype == "Income":
-            transactions = transactions.filter(transaction_type=1)
-    elif transactioncategory:
-        category_list = list(TransactionCategory.objects.all().values('id', 'category_name'))
-        transactioncategory = [category_list[i]['id'] for i in range(len(category_list)) if
-                               category_list[i]['category_name'] == transactioncategory][0]
-        transactions = transactions.filter(
-            transaction_category=transactioncategory)  # 'transaction_category' отдать имя
-    elif transactionStartDate and transactionEndDate:
-        transactionStartDate = list(map(int, transactionStartDate.split('-')))
-        transactionStartDate = date(transactionStartDate[0], transactionStartDate[1], transactionStartDate[2])
-        transactionEndDate = list(map(int, transactionEndDate.split('-')))
-        transactionEndDate = date(transactionEndDate[0], transactionEndDate[1], transactionEndDate[2])
-        if transactionStartDate < transactionEndDate and transactionStartDate < date.today() and transactionEndDate <= date.today() and transactiondate is None:
-            transactions = transactions.filter(transaction_date__range=[transactionStartDate, transactionEndDate])
-    transactions = list(
-        transactions.values('transaction_date', 'transaction_type', 'transaction_category__category_name',
-                            'transaction_sum',
-                            'transaction_comment'))
-    return JsonResponse({"transactions": transactions})
+    category_list = TransactionCategory.objects.all()
+
+
+    transaction_type = request.GET.get("transaction_type")
+    transaction_category = request.GET.get("transaction_category")
+    transaction_start_date = request.GET.get("transaction_start_date")
+    transaction_end_date = request.GET.get("transaction_end_date")
+
+    if transaction_start_date and transaction_end_date:
+        transaction_start_date = datetime.strptime(transaction_start_date, '%Y-%m-%d')
+        transaction_end_date = datetime.strptime(transaction_end_date, '%Y-%m-%d')
+        transactions = transactions.filter(transaction_date__range=[transaction_start_date, transaction_end_date])
+
+    if transaction_type and transaction_type == "Expense":
+        transactions = transactions.filter(transaction_type=0)
+    elif transaction_type and transaction_type == "Income":
+        transactions = transactions.filter(transaction_type=1)
+
+    if transaction_category:
+        transactions = transactions.filter(transaction_category=transaction_category)
+
+
+    return render(request, 'hbm/filter.html', {'transactions': transactions, 'category_list': category_list})
 
 
 @login_required
 @require_http_methods(["GET"])
-def transaction_statistic(request):
+def transaction_statistics(request):
     account_data = get_object_or_404(Account, account_owner=request.user)
     transactions = Transaction.objects.filter(transaction_account=account_data)
 
@@ -130,18 +117,18 @@ def transaction_statistic(request):
         transaction_start_date = datetime.strptime(transaction_start_date, '%Y-%m-%d')
         transaction_end_date = datetime.strptime(transaction_end_date, '%Y-%m-%d')
         transactions = transactions.filter(transaction_date__range=[transaction_start_date, transaction_end_date])
-    else:
-        return JsonResponse(status=400, data={"error": "Bad request"})
 
     transaction_inc_sum = transactions.filter(transaction_type=1).aggregate(overall_income=Sum('transaction_sum'))
     transaction_exp_sum = transactions.filter(transaction_type=0).aggregate(overall_expense=Sum('transaction_sum'))
     category_list = list(transactions.values('transaction_category__category_name'))
-    category_name_list = [*set(category_list[i]['transaction_category__category_name'] for i in range(len(category_list)))]
+    category_name_list = [
+        *set(category_list[i]['transaction_category__category_name'] for i in range(len(category_list)))]
     statistic_data = [transaction_inc_sum, transaction_exp_sum]
     for c in category_name_list:
-        statistic_data.append({c: transactions.filter(transaction_category__category_name=c).aggregate(Sum('transaction_sum'))["transaction_sum__sum"]})
+        statistic_data.append({c: transactions.filter(transaction_category__category_name=c).aggregate(
+            Sum('transaction_sum'))["transaction_sum__sum"]})
 
-    return JsonResponse({"statistic_data": statistic_data})
+    return render(request, 'hbm/transaction_statistics.html', {"statistic_data": statistic_data})
 
 
 # Planning

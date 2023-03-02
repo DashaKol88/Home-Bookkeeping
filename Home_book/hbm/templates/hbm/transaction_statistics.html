@@ -1,0 +1,21 @@
+{% extends 'hbm/base.html' %}
+{% block content %}
+<form action="{% url 'transaction_statistics' %}" method="get">
+    {% csrf_token %}
+<div class="input-group-text">Select the period for which you want to receive statistics</div>
+    <input name="transaction_start_date" type="date" />
+    <input name="transaction_end_date" type="date" />
+        <button type="submit" class="save btn btn-primary">Go</button>
+</form>
+{% for s in statistic_data %}
+    {% for key,value in s.items %}
+<div class="card" style="width: 18rem;">
+  <div class="card-body">
+    <h5 class="card-title">{{ key }}</h5>
+    <p class="card-text">{{ value }}</p>
+  </div>
+</div>
+{% endfor %}
+{% endfor %}
+
+{% endblock %}
