@@ -4,7 +4,6 @@
 <body>
 <h1>Filter</h1>
 <form action="{% url 'filter' %}" method="get">
-    {% csrf_token %}
     <div class="input-group mb-3">
         <label class="input-group-text" for="transaction_type">Filter by type</label>
         <select class="form-select" id="transaction_type" name="transaction_type">

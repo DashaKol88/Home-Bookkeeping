@@ -1,10 +1,32 @@
 {% extends 'hbm/base.html' %}
 {% block content %}
-{% if user_account %}
-    <p>Hello, {{user_account.account_owner}}</p>
-    <p>Account number: {{user_account.account_number}}</p>
-    <p>Your balance: {{user_account.account_balance}}</p>
-{% else %}
-    <p>Hello, Anonymous</p>
-{% endif %}
+<div class="card-group">
+  <div class="card">
+    <img src="/static/images/first1.png" class="card-img-top" alt="first">
+    <div class="card-body">
+      <h5 class="card-title">Home bookkeeping</h5>
+      <p class="card-text">Use this application if you want to keep your home bookkeeping.</p>
+    </div>
+  </div>
+  <div class="card">
+    <img src="/static/images/second.png" class="card-img-top" alt="second">
+    <div class="card-body">
+      <h5 class="card-title">Planning</h5>
+      <p class="card-text">Plan your future expenses and income.</p>
+
+    </div>
+  </div>
+  <div class="card">
+    <img src="/static/images/third.png" class="card-img-top" alt="third">
+    <div class="card-body">
+      <h5 class="card-title">Statistics</h5>
+      <p class="card-text">View statistics by category of expenses and income.</p>
+
+    </div>
+  </div>
+</div>
+<div class="d-grid gap-2 col-6 mx-auto">
+  <a href="{% url 'register' %}" class="btn btn-primary">Registration</a>
+  <a href="{% url 'login' %}" class="btn btn-primary">Login</a>
+</div>
 {% endblock %}

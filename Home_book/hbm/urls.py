@@ -1,10 +1,9 @@
 from django.urls import path
 from django.contrib.auth import views as auth_views
-from . import views, api_views
+from . import views
 
 urlpatterns = [
-    path('', views.index, name='index'),
-
+    path('', views.home, name='home'),
     path('login/', auth_views.LoginView.as_view(template_name='hbm/login.html'), name='login'),
     path('logout/', auth_views.LogoutView.as_view(template_name='hbm/logout.html'), name='logout'),
     path('register/', views.register, name='register'),
@@ -15,6 +14,5 @@ urlpatterns = [
     path('planned/transactions/', views.planned_transactions, name='planned_transactions'),
     path('planned/add_scheduled_transaction/', views.add_scheduled_transaction, name='add_scheduled_transaction'),
     path('planned/del_scheduled_transaction/<int:transaction_id>', views.del_scheduled_transaction, name='del_scheduled_transaction'),
-    path('home/', views.home, name='home'),
     path('filter/', views.filter, name='filter'),
 ]
