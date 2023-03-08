@@ -9,7 +9,7 @@
 <form action="{% url 'add_transaction' %}" method="post">
     {% csrf_token %}
     <table class="table-primary">
-       {{ form|crispy }}
+        {{ form|crispy }}
     </table>
         <button type="submit" class="save btn btn-primary">Save</button>
 </form>

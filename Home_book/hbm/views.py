@@ -167,3 +167,27 @@ def del_scheduled_transaction(request, transaction_id):
     transaction = get_object_or_404(PlanningTransaction, pk=transaction_id, transaction_account_plan=user_account)
     transaction.delete()
     return redirect('planned_transactions')
+
+
+@login_required
+@require_http_methods(["GET"])
+def planned_transaction_statistics(request):
+    user_account = get_object_or_404(Account, account_owner=request.user)
+    transactions = PlanningTransaction.objects.filter(transaction_account_plan=user_account)
+
+    transaction_start_date = request.GET.get("transaction_start_date")
+    transaction_end_date = request.GET.get("transaction_end_date")
+
+    if transaction_start_date and transaction_end_date:
+        transaction_start_date = datetime.strptime(transaction_start_date, '%Y-%m-%d')
+        transaction_end_date = datetime.strptime(transaction_end_date, '%Y-%m-%d')
+        transactions = transactions.filter(transaction_date_plan__range=[transaction_start_date, transaction_end_date])
+
+    transaction_inc_sum = transactions.filter(transaction_type_plan=1).aggregate(
+        planned_income=Sum('transaction_sum_plan', output_field=FloatField()))
+    transaction_exp_sum = transactions.filter(transaction_type_plan=0).aggregate(
+        planned_expense=Sum('transaction_sum_plan', output_field=FloatField()))
+
+    statistic_data = [transaction_inc_sum, transaction_exp_sum]
+    return render(request, 'hbm/plan_transaction_statistics.html',
+                  {"statistic_data": statistic_data, 'user_account': user_account})
