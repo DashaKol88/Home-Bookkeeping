@@ -40,14 +40,6 @@
                 <ul class="navbar-text">Your balance: {{user_account.account_balance}}</ul>
                 <span class="navbar-text"> </span>
                 <ul class="navbar-text">Hello, {{user.get_username}}</ul>
-            {% else %}
-            <ul>
-                <form action="{% url 'login' %}" method="post">
-                    {% csrf_token %}
-                    <button type="submit" class="btn btn-primary">Login</button>
-                </form>
-            </ul>
-            {% endif %}
             <ul>
             <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#examplemodal1">Logout
             </button>
@@ -69,5 +61,13 @@
                                 </form>
                             </div>
                         </div>
+            {% else %}
+            <ul>
+                <form action="{% url 'login' %}" method="post">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-primary">Login</button>
+                </form>
+            </ul>
+            {% endif %}
 </nav>
 

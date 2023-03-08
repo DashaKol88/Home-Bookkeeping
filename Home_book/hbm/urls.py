@@ -14,5 +14,6 @@ urlpatterns = [
     path('planned/transactions/', views.planned_transactions, name='planned_transactions'),
     path('planned/add_scheduled_transaction/', views.add_scheduled_transaction, name='add_scheduled_transaction'),
     path('planned/del_scheduled_transaction/<int:transaction_id>', views.del_scheduled_transaction, name='del_scheduled_transaction'),
+    #path('planned/transaction_statistics/', views.planned_transaction_statistics, name='planned_transaction_statistics'),
     path('filter/', views.filter, name='filter'),
 ]
