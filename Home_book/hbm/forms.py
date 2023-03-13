@@ -7,12 +7,12 @@ from django.forms import DateInput
 
 def validate_not_future_date(value):
     if value > date.today():
-        raise ValidationError('%s is in the future' % value)
+        raise ValidationError({'transaction_date': [f'{value} is in the future']})
 
 
 def validate_not_past_date(value):
     if value < date.today():
-        raise ValidationError('%s is in the past' % value)
+        raise ValidationError({'transaction_date_plan': [f'{value} is in the past']})
 
 
 class TransactionForm(forms.ModelForm):
