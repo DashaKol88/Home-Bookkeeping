@@ -1,8 +1,9 @@
 from django.test import TestCase
 from datetime import date, timedelta
+from .forms import TransactionForm, PlanningTransactionForm
+
 
 # Create your tests here.
-from .forms import TransactionForm, PlanningTransactionForm
 
 
 class TransactionFormTest(TestCase):
@@ -43,4 +44,3 @@ class PlanningTransactionFormTest(TestCase):
         form = PlanningTransactionForm(data={'transaction_date_plan': date_test})
         form.is_valid()
         self.assertIsNone(form.errors.get('transaction_date_plan'))
-

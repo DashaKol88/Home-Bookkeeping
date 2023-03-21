@@ -13,7 +13,7 @@ class Account(models.Model):
     account_balance = models.DecimalField(max_digits=10, decimal_places=2, default=0)
 
     def __str__(self):
-        return f'{self.account_owner} {self.account_number} {self.account_balance}'
+        return f'{self.account_owner}'
 
 
 class TransactionCategory(models.Model):
@@ -23,6 +23,9 @@ class TransactionCategory(models.Model):
 
     def __str__(self):
         return self.category_name
+
+    class Meta:
+        verbose_name_plural = "Transaction categories"
 
 
 class Transaction(models.Model):

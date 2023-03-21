@@ -23,6 +23,7 @@ def home(request):
         return render(request, 'hbm/home.html')
 
 
+@require_http_methods(["POST"])
 def register(request):
     if request.method != 'POST':
         form = UserCreationForm()
@@ -39,6 +40,7 @@ def register(request):
 
 
 @login_required
+@require_http_methods(["GET"])
 def latest(request):
     user_account = get_object_or_404(Account, account_owner=request.user)
     transactions = Transaction.objects.filter(transaction_account=user_account).order_by('-transaction_date')[:10]
@@ -46,6 +48,7 @@ def latest(request):
 
 
 @login_required
+@require_http_methods(["POST"])
 def add_transaction(request):
     user_account = get_object_or_404(Account, account_owner=request.user)
     if request.method == "POST":
@@ -66,6 +69,7 @@ def add_transaction(request):
 
 
 @login_required
+@require_http_methods(["POST"])
 def del_transaction(request, transaction_id):
     user_account = get_object_or_404(Account, account_owner=request.user)
     transaction = get_object_or_404(Transaction, pk=transaction_id, transaction_account=user_account)
@@ -79,6 +83,7 @@ def del_transaction(request, transaction_id):
 
 
 @login_required
+@require_http_methods(["GET"])
 def filter(request):
     user_account = get_object_or_404(Account, account_owner=request.user)
     transactions = Transaction.objects.filter(transaction_account=user_account)
@@ -138,6 +143,7 @@ def transaction_statistics(request):
 
 # Planning
 @login_required
+@require_http_methods(["GET"])
 def planned_transactions(request):
     user_account = get_object_or_404(Account, account_owner=request.user)
     transactions = PlanningTransaction.objects.filter(transaction_account_plan=user_account).order_by(
@@ -147,6 +153,7 @@ def planned_transactions(request):
 
 
 @login_required
+@require_http_methods(["POST"])
 def add_scheduled_transaction(request):
     user_account = get_object_or_404(Account, account_owner=request.user)
     if request.method == "POST":
@@ -162,6 +169,7 @@ def add_scheduled_transaction(request):
 
 
 @login_required
+@require_http_methods(["POST"])
 def del_scheduled_transaction(request, transaction_id):
     user_account = get_object_or_404(Account, account_owner=request.user)
     transaction = get_object_or_404(PlanningTransaction, pk=transaction_id, transaction_account_plan=user_account)
