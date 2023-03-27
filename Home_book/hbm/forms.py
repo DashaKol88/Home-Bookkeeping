@@ -5,7 +5,7 @@ from .models import Transaction, PlanningTransaction
 from django.forms import DateInput
 
 
-def validate_not_future_date(value):
+def validate_not_future_date(value: date) -> None:
     """
     Function to return an error if the transaction date is in the future
     """
@@ -13,7 +13,7 @@ def validate_not_future_date(value):
         raise ValidationError({'transaction_date': [f'{value} is in the future']})
 
 
-def validate_not_past_date(value):
+def validate_not_past_date(value: date) -> None:
     """
     Function for throwing an error if the date of the planned transaction is in the past
     """

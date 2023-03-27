@@ -1,12 +1,13 @@
 from datetime import datetime, date
 from decimal import Decimal
+from typing import Union
 
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django.db.models import Sum, FloatField
-from django.http import HttpResponse, JsonResponse
+from django.http import HttpResponse, JsonResponse, HttpRequest, HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views.decorators.http import require_http_methods
 
@@ -15,9 +16,14 @@ from .models import Transaction, Account, TransactionCategory, PlanningTransacti
 
 
 # Create your views here.
-def home(request):
+def home(request: HttpRequest) -> HttpResponse:
     """
     Function for the home page with general information. If the user is logged in, the balance and username are visible.
+
+    :param request: The HTTP request object.
+    :type request: HttpRequest
+    :return: The rendered home page.
+    :rtype: HttpResponse
     """
     if request.user.is_authenticated:
         user_account = get_object_or_404(Account, account_owner=request.user)
@@ -27,9 +33,15 @@ def home(request):
 
 
 @require_http_methods(["POST"])
-def register(request):
+def register(request: HttpRequest) -> Union[HttpResponse, HttpResponseRedirect]:
     """
     Function for registering a new user with automatic authorization.
+    :param request: The HTTP request object.
+    :type request: HttpRequest
+    :return: If the request method is GET, renders the register.html template.
+             If the request method is POST, validates the registration form and creates a new user.
+             Redirects the user to the home page upon successful registration.
+    :rtype: Union[HttpResponse, HttpResponseRedirect]
     """
     if request.method != 'POST':
         form = UserCreationForm()
@@ -45,11 +57,15 @@ def register(request):
     return render(request, 'hbm/register.html', {'form': form})
 
 
-@login_required
+@login_required(login_url="/login/")
 @require_http_methods(["GET"])
-def latest(request):
+def latest(request: HttpRequest) -> HttpResponse:
     """
     Function for the list of recent transactions. Returns the 10 most recent transactions, sorted by date.
+    :param request: The HTTP request.
+    :type request: HttpRequest
+    :return: The rendered HTML template for displaying the latest transactions.
+    :rtype: HttpResponse
     """
     user_account = get_object_or_404(Account, account_owner=request.user)
     transactions = Transaction.objects.filter(transaction_account=user_account).order_by('-transaction_date')[:10]
@@ -58,9 +74,14 @@ def latest(request):
 
 @login_required
 @require_http_methods(["POST"])
-def add_transaction(request):
+def add_transaction(request: HttpRequest) -> Union[HttpResponse, HttpResponseRedirect]:
     """
     Function for adding a transaction. When removed, adding also changes the current balance.
+    :param request: HTTP request object containing the form data.
+    :type request: HttpRequest
+    :return: If the request method is POST and the form is valid, redirects the user to the page with the latest
+             transactions, otherwise returns a template with a form to add a transaction.
+    :rtype: Union[HttpResponse, HttpResponseRedirect]
     """
     user_account = get_object_or_404(Account, account_owner=request.user)
     if request.method == "POST":
@@ -82,9 +103,15 @@ def add_transaction(request):
 
 @login_required
 @require_http_methods(["POST"])
-def del_transaction(request, transaction_id):
+def del_transaction(request: HttpRequest, transaction_id: int) -> HttpResponseRedirect:
     """
     Function to delete a transaction. Deleting a transaction also changes the current balance.
+    :param request: The HTTP request object.
+    :type request: HttpRequest
+    :param transaction_id: The ID of the transaction to delete.
+    :type transaction_id: int
+    :return: A redirect response to the latest transactions page.
+    :rtype: HttpResponseRedirect
     """
     user_account = get_object_or_404(Account, account_owner=request.user)
     transaction = get_object_or_404(Transaction, pk=transaction_id, transaction_account=user_account)
@@ -99,9 +126,13 @@ def del_transaction(request, transaction_id):
 
 @login_required
 @require_http_methods(["GET"])
-def filter(request):
+def filter(request: HttpRequest) -> HttpResponse:
     """
     A function to filter transactions by type, category and/or time period. Returns a filtered list of transactions.
+    :param request: The HTTP request object.
+    :type request: HttpRequest
+    :return: The HTTP response object.
+    :rtype: HttpResponse
     """
     user_account = get_object_or_404(Account, account_owner=request.user)
     transactions = Transaction.objects.filter(transaction_account=user_account)
@@ -131,10 +162,14 @@ def filter(request):
 
 @login_required
 @require_http_methods(["GET"])
-def transaction_statistics(request):
+def transaction_statistics(request: HttpRequest) -> HttpResponse:
     """
     Function for statistics on transactions for the selected period. Gives the total amount of income and expenses
     and the amount for each category of transactions.
+    :param request: The HTTP request object.
+    :type request: HttpRequest
+    :return: The HTTP response object.
+    :rtype: HttpResponse
     """
     user_account = get_object_or_404(Account, account_owner=request.user)
     transactions = Transaction.objects.filter(transaction_account=user_account)
@@ -166,9 +201,13 @@ def transaction_statistics(request):
 # Planning
 @login_required
 @require_http_methods(["GET"])
-def planned_transactions(request):
+def planned_transactions(request: HttpRequest) -> HttpResponse:
     """
     Function for the list of planned transactions. Returns 10 scheduled transactions sorted by date.
+    :param request: The HTTP request.
+    :type request: HttpRequest
+    :return: The rendered HTML template for displaying the planned transactions.
+    :rtype: HttpResponse
     """
     user_account = get_object_or_404(Account, account_owner=request.user)
     transactions = PlanningTransaction.objects.filter(transaction_account_plan=user_account).order_by(
@@ -179,9 +218,14 @@ def planned_transactions(request):
 
 @login_required
 @require_http_methods(["POST"])
-def add_scheduled_transaction(request):
+def add_scheduled_transaction(request: HttpRequest) -> Union[HttpResponse, HttpResponseRedirect]:
     """
     Function for adding a planned transaction.
+    :param request: HTTP request object containing the form data.
+    :type request: HttpRequest
+    :return: HTTP response object redirecting to the planned transactions page if form is valid, else renders the
+        add_scheduled_transaction template.
+    :rtype: Union[HttpResponse, HttpResponseRedirect]
     """
     user_account = get_object_or_404(Account, account_owner=request.user)
     if request.method == "POST":
@@ -198,9 +242,15 @@ def add_scheduled_transaction(request):
 
 @login_required
 @require_http_methods(["POST"])
-def del_scheduled_transaction(request, transaction_id):
+def del_scheduled_transaction(request: HttpRequest, transaction_id: int) -> HttpResponseRedirect:
     """
     Function to delete a planned transaction.
+    :param request: The HTTP request object.
+    :type request: HttpRequest
+    :param transaction_id: The ID of the transaction to be deleted.
+    :type transaction_id: int
+    :return: A redirect to the planned transactions page.
+    :rtype: HttpResponseRedirect
     """
     user_account = get_object_or_404(Account, account_owner=request.user)
     transaction = get_object_or_404(PlanningTransaction, pk=transaction_id, transaction_account_plan=user_account)
@@ -210,10 +260,14 @@ def del_scheduled_transaction(request, transaction_id):
 
 @login_required
 @require_http_methods(["GET"])
-def planned_transaction_statistics(request):
+def planned_transaction_statistics(request: HttpRequest) -> HttpResponse:
     """
     Function for statistics on planned transactions for the selected period. Gives the total amount of income and
     expenses and the amount for each category of transactions.
+    :param request: The HTTP request object.
+    :type request: HttpRequest
+    :return: The HTTP response object that the client will receive with the statistics of planned transactions.
+    :rtype: HttpResponse
     """
     user_account = get_object_or_404(Account, account_owner=request.user)
     transactions = PlanningTransaction.objects.filter(transaction_account_plan=user_account)
